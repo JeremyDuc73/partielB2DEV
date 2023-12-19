@@ -7,6 +7,7 @@
   <body>
     <div class="container">
         <h1 class="mt-4 mb-3">Documentation partiel API</h1>
+        <h2>https://partiel.jeremyduc.com</h2>
         <div class="border border-dark p-3 m-3">
         <h5><u>https://partiel.jeremyduc.com/register</u></h5>
         <h6>Type de route : POST</h6>
