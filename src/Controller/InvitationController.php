@@ -75,7 +75,7 @@ class InvitationController extends AbstractController
         {
             return $this->json("This event is cancelled", 401);
         }
-        elseif ($invitation->getForEvent()->getStartingDate() < $currentDate )
+        elseif ($invitation->getForEvent()->getStartingDate() < $currentDate)
         {
             $invitation->setStatus("denied");
             $manager->persist($invitation);
@@ -90,5 +90,30 @@ class InvitationController extends AbstractController
         $manager->persist($event);
         $manager->flush();
         return $this->json("You joined this event", 201);
+    }
+
+    #[Route('/invitation/{id}/deny', methods: ['POST'])]
+    public function deny(Invitation $invitation, EntityManagerInterface $manager)
+    {
+        $currentDate = new \DateTime();
+        if ($invitation->getToProfile() !== $this->getUser()->getProfile())
+        {
+            return $this->json("This is not for you", 401);
+        }
+        elseif (!$invitation->getForEvent()->isOnSchedule())
+        {
+            return $this->json("This event is cancelled", 401);
+        }
+        elseif ($invitation->getForEvent()->getStartingDate() < $currentDate)
+        {
+            $invitation->setStatus("denied");
+            $manager->persist($invitation);
+            $manager->flush();
+            return $this->json("This event has expired", 201);
+        }
+        $invitation->setStatus("denied");
+        $manager->persist($invitation);
+        $manager->flush();
+        return $this->json("You denied the invitation", 201);
     }
 }

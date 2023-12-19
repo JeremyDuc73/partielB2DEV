@@ -29,7 +29,7 @@ class EventController extends AbstractController
         }
         return $this->json($publicEvents, 200, [], ["groups"=>"event:readOne"]);
     }
-    #[Route('/myorganizedevents', methods: ['GET'])]
+    #[Route('/events/organized', methods: ['GET'])]
     public function getMyOrganizedEvents(EventRepository $repository)
     {
         $myEvents = [];
@@ -43,7 +43,7 @@ class EventController extends AbstractController
         }
         return $this->json($myEvents, 200, [], ["groups"=>"event:readOne"]);
     }
-    #[Route('/myevents', methods: ['GET'])]
+    #[Route('/events/participant', methods: ['GET'])]
     public function getMyEvents(EventRepository $repository)
     {
         $myEvents = [];
@@ -78,7 +78,7 @@ class EventController extends AbstractController
         return $this->json($event, 201, [], ["groups"=>"event:readOne"]);
     }
 
-    #[Route('/event/{id}/edit', methods: ['POST'])]
+    #[Route('/event/{id}/edit', methods: ['PUT'])]
     public function editDates(Event $event, EntityManagerInterface $manager, SerializerInterface $serializer, Request $request)
     {
         $currentDate = new \DateTime();
@@ -141,7 +141,7 @@ class EventController extends AbstractController
         return $this->json($participants, 200, [], ["groups"=>"participant:read"]);
     }
 
-    #[Route('/event/{id}/changeSchedule', methods: ['POST'])]
+    #[Route('/event/{id}/changeschedule', methods: ['POST'])]
     public function changeSchedule(Event $event, EntityManagerInterface $manager)
     {
         if ($event->getOrganizer() !== $this->getUser()->getProfile())

@@ -12,15 +12,15 @@ class Suggestion
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['suggestion:read'])]
+    #[Groups(['suggestion:read', 'contribution:readAll'])]
     private ?int $id = null;
 
     #[ORM\Column]
-    #[Groups(['suggestion:read'])]
+    #[Groups(['suggestion:read', 'contribution:readAll'])]
     private ?bool $isTaken = false;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['suggestion:read'])]
+    #[Groups(['suggestion:read', 'contribution:readAll'])]
     private ?string $product = null;
 
     #[ORM\ManyToOne(inversedBy: 'suggestions')]
@@ -30,8 +30,8 @@ class Suggestion
     #[ORM\JoinColumn(nullable: false)]
     private ?Event $ofEvent = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Contribution $ofContribution = null;
+    #[ORM\OneToOne(mappedBy: 'fromSuggestion', cascade: ['persist', 'remove'])]
+    private ?Contribution $forContribution = null;
 
     public function getId(): ?int
     {
@@ -86,14 +86,24 @@ class Suggestion
         return $this;
     }
 
-    public function getOfContribution(): ?Contribution
+    public function getForContribution(): ?Contribution
     {
-        return $this->ofContribution;
+        return $this->forContribution;
     }
 
-    public function setOfContribution(?Contribution $ofContribution): static
+    public function setForContribution(?Contribution $forContribution): static
     {
-        $this->ofContribution = $ofContribution;
+        // unset the owning side of the relation if necessary
+        if ($forContribution === null && $this->forContribution !== null) {
+            $this->forContribution->setFromSuggestion(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($forContribution !== null && $forContribution->getFromSuggestion() !== $this) {
+            $forContribution->setFromSuggestion($this);
+        }
+
+        $this->forContribution = $forContribution;
 
         return $this;
     }

@@ -18,12 +18,12 @@ class Profile
     private ?int $id = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['profile:readAll', 'profile:readOne', 'event:readOne', 'invitation:read', 'participant:read'])]
+    #[Groups(['profile:readAll', 'profile:readOne', 'event:readOne', 'invitation:read', 'participant:read', 'contribution:readSimple', 'contribution:readAll'])]
     private ?string $displayName = null;
 
     #[ORM\OneToOne(inversedBy: 'profile', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['profile:readAll', 'event:readOne', 'invitation:read', 'participant:read'])]
+    #[Groups(['profile:readAll', 'event:readOne', 'invitation:read', 'participant:read', 'contribution:readSimple', 'contribution:readAll'])]
     private ?User $ofUser = null;
 
     #[ORM\Column]
@@ -38,7 +38,7 @@ class Profile
     #[ORM\OneToMany(mappedBy: 'toProfile', targetEntity: Invitation::class)]
     private Collection $invitations;
 
-    #[ORM\OneToMany(mappedBy: 'ofProfileÃ', targetEntity: Contribution::class)]
+    #[ORM\OneToMany(mappedBy: 'ofProfileï¿½', targetEntity: Contribution::class)]
     private Collection $contributions;
 
     #[ORM\OneToMany(mappedBy: 'forProfile', targetEntity: Suggestion::class)]
@@ -193,7 +193,7 @@ class Profile
     {
         if (!$this->contributions->contains($contribution)) {
             $this->contributions->add($contribution);
-            $contribution->setOfProfileÃ($this);
+            $contribution->setOfProfile($this);
         }
 
         return $this;
@@ -203,8 +203,8 @@ class Profile
     {
         if ($this->contributions->removeElement($contribution)) {
             // set the owning side to null (unless already changed)
-            if ($contribution->getOfProfileÃ() === $this) {
-                $contribution->setOfProfileÃ(null);
+            if ($contribution->getOfProfile() === $this) {
+                $contribution->setOfProfile(null);
             }
         }
 
